@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---------------- users ----------------
+    // Anyone signed in can read their own profile; admins can read/list all
+    // (needed for the admin "Users" panel). A user may edit their own
+    // profile but may NOT change their own `role` — only an existing admin
+    // can promote/demote another user.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) && request.resource.data.role == 'user';
+      allow update: if (isOwner(uid) && request.resource.data.role == resource.data.role)
+                    || isAdmin();
+      allow delete: if isAdmin();
+      allow list: if isAdmin();
+
+      // ---------------- cart (subcollection, private) ----------------
+      match /cart/{itemId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ---------------- products ----------------
+    // Catalog is public read (no auth required to browse). Only admins may
+    // create/edit/delete products or change stock/price.
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      // ---------------- reviews (subcollection, doc id == author uid) ----------------
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create, update: if isSignedIn() && request.auth.uid == reviewId
+                                && request.resource.data.userId == request.auth.uid;
+        allow delete: if (isSignedIn() && request.auth.uid == reviewId) || isAdmin();
+      }
+    }
+
+    // ---------------- orders ----------------
+    // A user can create an order for themselves and read their own orders.
+    // Only an admin can read all orders or change status; totals/items are
+    // immutable for regular users once placed.
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+      allow list: if isAdmin(); // regular users must query with a userId filter
+    }
+  }
+}

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет — ByteCore</title>
+<link rel="stylesheet" href="../css/style.css">
+<script>
+  if (location.protocol === 'file:') {
+    document.addEventListener('DOMContentLoaded', function () {
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#b23a2f;color:#fff;font-family:system-ui,sans-serif;font-size:13.5px;padding:10px 16px;text-align:center;';
+      bar.innerHTML = '\u26a0\ufe0f \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 \u043e\u0442\u043a\u0440\u044b\u0442\u0430 \u043d\u0430\u043f\u0440\u044f\u043c\u0443\u044e \u043a\u0430\u043a \u0444\u0430\u0439\u043b (file://) \u2014 ES-\u043c\u043e\u0434\u0443\u043b\u0438 \u0437\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u043d\u044b \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u043e\u043c, \u043f\u043e\u044d\u0442\u043e\u043c\u0443 \u0441\u0430\u0439\u0442 \u043d\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442. \u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u0435 \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0435\u0440\u0432\u0435\u0440: <code>npx serve .</code> \u0438\u043b\u0438 <code>python3 -m http.server 5500</code>, \u0437\u0430\u0442\u0435\u043c \u043e\u0442\u043a\u0440\u043e\u0439\u0442\u0435 http://localhost:...';
+      document.body.prepend(bar);
+    });
+  }
+</script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a href="index.html" class="brand">ByteCore<small>PC&nbsp;PARTS</small></a>
+    <nav class="topnav">
+      <a href="index.html">Каталог</a>
+      <a href="index.html#categories">Категории</a>
+      <a href="profile.html" class="active">Личный кабинет</a>
+      <a href="admin.html" data-admin-link class="hidden">Админ-панель</a>
+    </nav>
+    <div class="topbar__spacer" style="flex:1"></div>
+    <div class="topbar__actions">
+      <a href="cart.html" class="icon-btn" aria-label="Корзина">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="badge-count" data-cart-badge style="display:none">0</span>
+      </a>
+      <div data-auth-guest>
+        <button class="btn-ghost-dark" data-open-login>Войти</button>
+      </div>
+      <div data-auth-user class="hidden">
+        <a href="profile.html" class="user-chip"><span data-user-name>—</span><span class="role" data-user-role></span></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="section-head" style="margin-top:28px;"><h2>Личный кабинет</h2></div>
+
+  <div id="loggedOutState" class="state-block hidden">
+    <h3>Войдите в аккаунт</h3>
+    <p>Чтобы увидеть историю заказов и профиль.</p>
+    <button class="btn btn-copper" data-open-login style="margin-top:14px">Войти или зарегистрироваться</button>
+  </div>
+
+  <div class="profile-layout hidden" id="profileLayout">
+    <div class="profile-nav">
+      <button class="active" data-panel="orders">История заказов</button>
+      <button data-panel="reviews">Мои отзывы</button>
+      <button data-panel="settings">Настройки профиля</button>
+      <button data-logout style="color:var(--danger); margin-top:14px;">Выйти</button>
+    </div>
+
+    <div>
+      <div id="panel-orders">
+        <div id="ordersList"></div>
+        <p id="ordersEmpty" class="state-block hidden"><span></span></p>
+      </div>
+
+      <div id="panel-reviews" class="hidden">
+        <div id="reviewsList"></div>
+        <p id="reviewsEmpty" class="state-block hidden">У вас пока нет отзывов.</p>
+      </div>
+
+      <div id="panel-settings" class="hidden">
+        <form id="settingsForm" style="max-width:440px; background:#fff; border:1px solid var(--line); border-radius:3px; padding:22px;">
+          <div class="field"><label>Имя</label><input type="text" id="settingsName"></div>
+          <div class="field"><label>Email</label><input type="email" id="settingsEmail" disabled></div>
+          <div class="field"><label>Телефон</label><input type="text" id="settingsPhone" placeholder="+7 ..."></div>
+          <div class="field"><label>Адрес</label><input type="text" id="settingsAddress" placeholder="Город, улица, дом"></div>
+          <button class="btn btn-copper" type="submit">Сохранить изменения</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer__inner">
+    <div><div class="brand" style="color:#fff; margin-bottom:8px;">ByteCore</div><p>Учебный проект на Firebase Firestore + Authentication.</p></div>
+    <div><a href="index.html">Каталог</a><br><a href="cart.html">Корзина</a><br><a href="profile.html">Личный кабинет</a></div>
+  </div>
+</footer>
+
+<div class="modal-overlay hidden" id="authModal">
+  <div class="modal">
+    <div class="modal__head"><h3>Аккаунт ByteCore</h3><button class="modal__close">&times;</button></div>
+    <div class="modal__tabs">
+      <button class="modal__tab active" data-tab="login">Вход</button>
+      <button class="modal__tab" data-tab="register">Регистрация</button>
+    </div>
+    <div class="form-error hidden" id="authError"></div>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" required></div>
+      <div class="field"><label>Пароль</label><input type="password" id="loginPassword" required></div>
+      <button class="btn btn-copper btn-block" type="submit">Войти</button>
+      <p class="form-note"><a href="#" id="forgotPasswordLink">Забыли пароль?</a></p>
+    </form>
+    <form id="registerForm" class="hidden">
+      <div class="field"><label>Имя</label><input type="text" id="registerName" required></div>
+      <div class="field"><label>Email</label><input type="email" id="registerEmail" required></div>
+      <div class="field"><label>Пароль</label><input type="password" id="registerPassword" required minlength="6"></div>
+      <button class="btn btn-copper btn-block" type="submit">Создать аккаунт</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="../js/profile.js"></script>
+</body>
+</html>
