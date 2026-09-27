@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ-панель — ByteCore</title>
+<link rel="stylesheet" href="css/style.css">
+<script>
+  if (location.protocol === 'file:') {
+    document.addEventListener('DOMContentLoaded', function () {
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#b23a2f;color:#fff;font-family:system-ui,sans-serif;font-size:13.5px;padding:10px 16px;text-align:center;';
+      bar.innerHTML = '\u26a0\ufe0f \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 \u043e\u0442\u043a\u0440\u044b\u0442\u0430 \u043d\u0430\u043f\u0440\u044f\u043c\u0443\u044e \u043a\u0430\u043a \u0444\u0430\u0439\u043b (file://) \u2014 ES-\u043c\u043e\u0434\u0443\u043b\u0438 \u0437\u0430\u0431\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u0430\u043d\u044b \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u043e\u043c, \u043f\u043e\u044d\u0442\u043e\u043c\u0443 \u0441\u0430\u0439\u0442 \u043d\u0435 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442. \u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u0435 \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0435\u0440\u0432\u0435\u0440: <code>npx serve .</code> \u0438\u043b\u0438 <code>python3 -m http.server 5500</code>, \u0437\u0430\u0442\u0435\u043c \u043e\u0442\u043a\u0440\u043e\u0439\u0442\u0435 http://localhost:...';
+      document.body.prepend(bar);
+    });
+  }
+</script>
+</head>
+<body>
+
+<div id="gate" class="state-block" style="margin:80px auto;max-width:420px;">
+  <h3>Проверка доступа...</h3>
+  <p>Эта страница доступна только администраторам.</p>
+</div>
+
+<div class="admin-shell hidden" id="adminShell">
+  <aside class="admin-side">
+    <a href="index.html" class="brand">ByteCore<small>ADMIN</small></a>
+    <button class="active" data-section="dashboard">Обзор</button>
+    <button data-section="products">Товары</button>
+    <button data-section="orders">Заказы</button>
+    <button data-section="users">Пользователи</button>
+    <button data-section="reviews">Модерация отзывов</button>
+    <button data-logout style="margin-top:20px; color:#e79b8a;">Выйти</button>
+    <a href="index.html" style="display:block; margin-top:6px; color:#c3c6cf; padding:10px;">← В магазин</a>
+  </aside>
+
+  <main class="admin-main">
+
+    <section id="section-dashboard">
+      <div class="admin-head"><h2 class="mt-0 mb-0">Обзор магазина</h2></div>
+      <div class="stat-row">
+        <div class="stat-card"><b id="dashProducts">—</b><span>товаров в каталоге</span></div>
+        <div class="stat-card"><b id="dashOrders">—</b><span>всего заказов</span></div>
+        <div class="stat-card"><b id="dashPending">—</b><span>заказов в ожидании</span></div>
+        <div class="stat-card"><b id="dashUsers">—</b><span>зарегистрированных пользователей</span></div>
+      </div>
+      <div class="section-head"><h2>Последние заказы</h2></div>
+      <table class="data-table">
+        <thead><tr><th>№</th><th>Клиент</th><th>Товары</th><th>Сумма</th><th>Статус</th><th>Дата</th></tr></thead>
+        <tbody id="dashRecentOrders"></tbody>
+      </table>
+    </section>
+
+    <section id="section-products" class="hidden">
+      <div class="admin-head">
+        <h2 class="mt-0 mb-0">Товары</h2>
+        <button class="btn btn-copper btn-sm" id="newProductBtn">+ Добавить товар</button>
+      </div>
+      <div class="toolbar" style="margin-top:0;">
+        <input type="text" id="adminProductSearch" placeholder="Поиск по названию...">
+        <select id="adminCategoryFilter"><option value="">Все категории</option></select>
+      </div>
+      <table class="data-table">
+        <thead><tr><th></th><th>Название</th><th>Категория</th><th>Бренд</th><th>Цена</th><th>Остаток</th><th>Рейтинг</th><th></th></tr></thead>
+        <tbody id="productsTable"></tbody>
+      </table>
+    </section>
+
+    <section id="section-orders" class="hidden">
+      <div class="admin-head"><h2 class="mt-0 mb-0">Заказы</h2></div>
+      <div class="toolbar" style="margin-top:0;">
+        <label>Статус</label>
+        <select id="orderStatusFilter">
+          <option value="">Все</option>
+          <option value="pending">Ожидает обработки</option>
+          <option value="processing">В обработке</option>
+          <option value="shipped">Отправлен</option>
+          <option value="completed">Завершён</option>
+          <option value="cancelled">Отменён</option>
+        </select>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>№</th><th>Клиент</th><th>Товары</th><th>Сумма</th><th>Адрес</th><th>Статус</th><th>Дата</th></tr></thead>
+        <tbody id="ordersTable"></tbody>
+      </table>
+    </section>
+
+    <section id="section-users" class="hidden">
+      <div class="admin-head"><h2 class="mt-0 mb-0">Пользователи</h2></div>
+      <table class="data-table">
+        <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Регистрация</th><th></th></tr></thead>
+        <tbody id="usersTable"></tbody>
+      </table>
+    </section>
+
+    <section id="section-reviews" class="hidden">
+      <div class="admin-head"><h2 class="mt-0 mb-0">Модерация отзывов</h2></div>
+      <table class="data-table">
+        <thead><tr><th>Товар</th><th>Автор</th><th>Оценка</th><th>Текст</th><th></th></tr></thead>
+        <tbody id="reviewsTable"></tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<!-- Product editor modal -->
+<div class="modal-overlay hidden" id="productModal">
+  <div class="modal modal--wide">
+    <div class="modal__head"><h3 id="productModalTitle">Новый товар</h3><button class="modal__close" id="productModalClose">&times;</button></div>
+    <form id="productForm">
+      <input type="hidden" id="pfId">
+      <div class="field-row">
+        <div class="field"><label>Название</label><input type="text" id="pfName" required></div>
+        <div class="field"><label>Бренд</label><input type="text" id="pfBrand" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Категория</label>
+          <select id="pfCategory" required></select>
+        </div>
+        <div class="field"><label>Цена (₸)</label><input type="number" id="pfPrice" min="0" required></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Остаток на складе</label><input type="number" id="pfStock" min="0" required></div>
+        <div class="field"><label>Артикул / модель</label><input type="text" id="pfModel" placeholder="необязательно"></div>
+      </div>
+      <div class="field">
+        <label>Ссылка на фото товара</label>
+        <input type="text" id="pfImageUrl" placeholder="https://... (прямая ссылка на .jpg/.png)">
+        <div class="field-hint">Если оставить пустым — покажется цветная схема-иконка категории вместо фото. Вставьте прямую ссылку на изображение (не страницу).</div>
+      </div>
+      <div class="field"><label>Описание</label><textarea id="pfDescription" required></textarea></div>
+      <div class="field">
+        <label>Характеристики (по одной на строку, формат: Параметр: значение)</label>
+        <textarea id="pfSpecs" placeholder="Ядра: 16&#10;Сокет: AM5&#10;TDP: 170W"></textarea>
+        <div class="field-hint">Отображаются в таблице характеристик на странице товара.</div>
+      </div>
+      <button class="btn btn-copper btn-block" type="submit">Сохранить товар</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
