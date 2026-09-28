@@ -12,8 +12,7 @@ export const SEED_PRODUCTS = [
   { name: "ByteCore Gamer Lite", brand: "ByteCore", category: "prebuilt", price: 449900, stock: 8,
     description: "Входная игровая сборка для стабильных 1080p 60+ fps в большинстве современных игр.",
     specs: { "Процессор": "AMD Ryzen 5 7600", "Видеокарта": "RTX 4060 8 ГБ", "Память": "16 ГБ DDR5", "Накопитель": "1 ТБ NVMe SSD", "БП": "650W 80+ Bronze", "Гарантия": "24 месяца" } },
-  { name: "ByteCore Gamer Lite + монитор 24\" 144Hz", brand: "ByteCore", category: "prebuilt", price: 519900, stock: 6,
-    description: "Та же сборка Gamer Lite, но сразу с игровым монитором 144Гц в комплекте — готово к распаковке.",
+  { name: "ByteCore Gamer Lite + монитор 24\" 144Hz", brand: "ByteCore", category: "prebuilt", price: 519900, stock: 6,    description: "Та же сборка Gamer Lite, но сразу с игровым монитором 144Гц в комплекте — готово к распаковке.",
     specs: { "Процессор": "AMD Ryzen 5 7600", "Видеокарта": "RTX 4060 8 ГБ", "Память": "16 ГБ DDR5", "Накопитель": "1 ТБ NVMe SSD", "В комплекте": "Монитор 24\" 144Гц IPS", "Гарантия": "24 месяца" } },
   { name: "ByteCore Gamer Pro", brand: "ByteCore", category: "prebuilt", price: 749900, stock: 7,
     description: "Сбалансированная сборка для 1440p на высоких настройках с трассировкой лучей.",
@@ -184,6 +183,7 @@ export const SEED_PRODUCTS = [
     description: "Механическая клавиатура с горячей заменой свитчей и подсветкой.",
     specs: { "Тип переключателей": "Gateron Pro", "Подключение": "Bluetooth/USB-C", "Формат": "TKL" } },
   { name: "HyperX Cloud II игровая гарнитура", brand: "HyperX", category: "peripheral", price: 34900, stock: 30,
+    imageUrl: "image/HyperX Cloud.jpg",
     description: "Комфортная гарнитура с виртуальным объёмным звуком 7.1.",
     specs: { "Тип": "Проводная", "Звук": "7.1 виртуальный", "Микрофон": "Съёмный" } },
 ];
